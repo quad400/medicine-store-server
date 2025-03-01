@@ -1,0 +1,50 @@
+{
+  "name": "medicine-store-server",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run build && cross-env NODE_ENV=production node -r tsconfig-paths/register dist/main.js",
+    "dev": "cross-env NODE_ENV=development nodemon src/main.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "generate:migration": "ts-node script.ts generate",
+    "run:migration": "ts-node script.ts run"
+  },
+  "dependencies": {
+    "class-validator": "^0.14.1",
+    "cors": "^2.8.5",
+    "dayjs": "^1.11.13",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-list-endpoints": "^7.1.1",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "pg": "^8.13.3",
+    "pino": "^9.6.0",
+    "pino-pretty": "^13.0.0",
+    "postgresql": "^0.0.1",
+    "prom-client": "^15.1.3",
+    "reflect-metadata": "^0.2.2",
+    "response-time": "^2.3.3",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "typedi": "^0.10.0",
+    "typeorm": "^0.3.20"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/morgan": "^1.9.9",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
+    "cross-env": "^7.0.3",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}

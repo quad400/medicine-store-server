@@ -1,0 +1,37 @@
+version: "3.8"
+services:
+  app:
+    container_name: medicine_store
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - "4000:4000"
+    depends_on:
+      - postgres
+      - pgadmin
+      
+  postgres:
+    image: "postgres:latest"
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secretpassword
+      POSTGRES_DB: medicine-store
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: "dpage/pgadmin4:latest"
+    container_name: pgabdmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "8080:80"
+
+volumes:
+  pg_data:
