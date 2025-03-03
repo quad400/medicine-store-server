@@ -5,6 +5,10 @@
     "module": "CommonJS",
     "moduleResolution": "Node" /* Specify what module code is generated. */,
     "baseUrl": "./",
+    "paths": {
+      "@abstracts/*":["src/abstracts/*"],
+      "@utils/*":["src/utils/*"]
+    },
     "typeRoots": [
       "./src/node_modules/@types",
       "./src/types"

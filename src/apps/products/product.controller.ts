@@ -1,27 +1,19 @@
-import { ApiDoc } from "../../../src/common/decorators/apidoc.decorator";
-import { Controller } from "../../../src/common/decorators/controller.decorator";
-import { Get } from "../../../src/common/decorators/http.decorator";
+import { AppResponse } from "src/common/utils/response";
 import { Request, Response } from "express";
-
+import { Body } from "src/common/decorators/params.decorator";
+import { CreateProduct } from "./dto/product.dto";
+import { Post } from "src/common/decorators/route.decorator";
+import { Controller } from "src/common/decorators/controller.decorator";
 
 @Controller("/api/v1/products")
 class ProductController {
-  /**
-   * @swagger
-   * /api/v1/products/:
-   *   get:
-   *     tags:
-   *       - Products
-   *     summary: Get all products
-   *     description: Retrieves a list of all product
-   *   
-   *     responses:
-   *       200:
-   *        
-   *         description: Successful response
-   */
-  @Get("/")
-  getProduct(req: Request, res: Response) {
-    return res.send("Hello how are you");
+  @Post("/")
+  getProduct(@Body() body: CreateProduct, req: Request, res: Response) {
+    AppResponse.success({
+      res,
+      status_code: 200,
+      message: "Hello how are you",
+      data:body
+    });
   }
 }
