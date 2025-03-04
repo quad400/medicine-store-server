@@ -1,0 +1,3 @@
+apis:
+  server.yml:
+    alias: api-title

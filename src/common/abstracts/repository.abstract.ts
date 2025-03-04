@@ -7,22 +7,30 @@ import {
   Like,
   ILike,
   FindOptionsWhere,
+  DataSource,
+  EntityTarget,
 } from "typeorm";
 import { AbstractEntity } from "./entity.abstract";
-import { HttpException } from "../exceptions/http.exception";
 import {
   HTTP_STATUS_FORBIDDEN,
   HTTP_STATUS_NOT_FOUND,
 } from "../utils/constants";
+import { HttpError } from "routing-controllers";
+import { Service } from "typedi";
 //   import { SearchKey } from '../enums/search.enum';
 
+@Service()
 export abstract class AbstractRepository<T extends AbstractEntity> {
-  constructor(
-    protected readonly repository: Repository<T>,
-    private readonly entityName: string
-  ) {
-    this.repository = repository;
+  protected repository: Repository<T>;
+
+  constructor(private dataSource: DataSource,private entity: EntityTarget<T>) {
+    this.repository = this.dataSource.getRepository(entity);
   }
+
+  getEntityName(){
+    return this.entity.toString()
+  }
+
   async save(entity: T): Promise<T> {
     return this.repository.save(entity);
   }
@@ -39,16 +47,16 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
     });
 
     if (entity) {
-      throw new HttpException(
+      throw new HttpError(
         HTTP_STATUS_FORBIDDEN,
-        `${this.entityName} with ${uniqueField} "${data[uniqueField]}" already exists.`
+        `${this.getEntityName()} with ${uniqueField} "${data[uniqueField]}" already exists.`
       );
     }
     return true;
   }
 
   // Create method with uniqueness check and active records only
-  async create(data: DeepPartial<T>, uniqueField?: string): Promise<T> {
+  async create(data: Partial<T>): Promise<T> {
     return await this.repository.save(data as T);
   }
 
@@ -68,9 +76,9 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
     });
 
     if (!entity || !bypassExistenceCheck) {
-      throw new HttpException(
+      throw new HttpError(
         HTTP_STATUS_NOT_FOUND,
-        `${this.entityName} with "${JSON.stringify(
+        `${this.getEntityName()} with "${JSON.stringify(
           data
         )}" does not exist or has been deleted.`
       );
@@ -149,7 +157,7 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
 
   async findOneAndDelete(data: T): Promise<void> {
     const entity = await this.findOne({ data: data });
-    await this.repository.delete(entity?.id);
+    await this.repository.remove(entity);
   }
 
   // Update method with existence check
@@ -158,7 +166,7 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
       where: { id } as FindOneOptions["where"],
     });
     if (!entity) {
-      throw new HttpException(
+      throw new HttpError(
         HTTP_STATUS_NOT_FOUND,
         `Cannot update. Entity with ID "${id}" does not exist or has been deleted.`
       );

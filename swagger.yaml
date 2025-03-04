@@ -14,16 +14,41 @@ paths:
       tags:
         - Products
       summary: Create Product
-      # security:
-      #   - jwt: []
-      # parameters:
-      #   - name: body
-      #     in: body
-      #     description: Event Data
-      #     required: true
-          # schema:
-          #   $ref: '#/definitions/events'
+      security:
+        - jwt: []
+      parameters:
+        - name: body
+          in: body
+          description: Create Data
+          required: true
+          schema:
+            $ref: "#/definitions/products"
       responses:
-        200:
-          description: 'Created'
+        201:
+          description: "Created"
+    get:
+      tags: 
+        - Product
+      responses: 200
 
+definitions:
+  products:
+    type: object
+    required:
+      - name
+      - image
+      - price
+      - categoryId
+    properties:
+      name:
+        type: string
+      image:
+        type: string
+      price:
+        type: number
+      categoryId:
+        type: string
+      prescriptions:
+        type: object
+      description:
+        type: string

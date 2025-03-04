@@ -1,7 +1,7 @@
 import { execSync } from "child_process";
 import log from "./src/common/utils/logger";
 
-type CommandTypeProps = "generate" | "run";
+type CommandTypeProps = "generate" | "run" | "revert";
 
 const typeorm = () => {
   const commandType = process.argv[2] as CommandTypeProps;
@@ -21,8 +21,10 @@ const typeorm = () => {
 
   if (commandType === "generate") {
     command = `npm run typeorm migration:generate -- -d src/common/db/typeorm.config.ts src/common/db/migrations/${migrationName}`;
-  } else {
+  } else if(commandType==="run") {
     command = `npm run typeorm migration:run -- -d src/common/db/typeorm.config.ts`;
+  } else if(commandType==="revert"){
+    command =  `npm run typeorm migration:revert -- -d src/common/db/typeorm.config.ts`
   }
 
   try {

@@ -1,49 +1,29 @@
-import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { AbstractEntity } from "../../../common/abstracts/entity.abstract";
-import { Prescription } from "./prescription.entity";
 import { SizeEnum } from "../../../common/enum/size.enum";
 import { Category } from "./category.entity";
 
-/**
- * @swagger
- * components:
- *   schemas:
- *     Product:
- *       type: object
- *       required:
- *         - name
- *         - price
- *         - category
- *       properties:
- *         id:
- *           type: integer
- *           description: The auto-generated ID of the product.
- *         name:
- *           type: string
- *           description: The name of the product.
- *         price:
- *           type: number
- *           format: float
- *           description: The price of the product.
- *         category:
- *           $ref: '#/components/schemas/Category'
- *           description: The category to which the product belongs.
- */
 @Entity()
 export class Product extends AbstractEntity {
-  @Column()
+  @PrimaryGeneratedColumn()
+  id: string;
+
+  @Column({ nullable: false })
   name: string;
 
-  @Column()
+  @Column({ nullable: false })
   image: string;
 
-  @Column()
+  @Column({ nullable: true })
   description: string;
 
-  @OneToMany(() => Prescription, (prescription) => prescription.product, {
-    eager: true,
-  })
-  prescriptions: Prescription;
+  @Column({ type: "json", nullable: true })
+  prescriptions: Record<string, any>;
 
   @Column({ type: "bigint" })
   price: number;

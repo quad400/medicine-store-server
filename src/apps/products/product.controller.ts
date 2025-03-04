@@ -1,19 +1,45 @@
-import { AppResponse } from "src/common/utils/response";
-import { Request, Response } from "express";
-import { Body } from "src/common/decorators/params.decorator";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpError,
+  JsonController,
+  Post,
+  QueryParam,
+} from "routing-controllers";
+import "reflect-metadata";
+import { Response } from "src/common/utils/response";
+import { ProductService } from "./product.service";
+import Container, { Inject, Service } from "typedi";
 import { CreateProduct } from "./dto/product.dto";
-import { Post } from "src/common/decorators/route.decorator";
-import { Controller } from "src/common/decorators/controller.decorator";
+import {
+  HTTP_STATUS_CREATED,
+  HTTP_STATUS_OK,
+} from "src/common/utils/constants";
 
-@Controller("/api/v1/products")
-class ProductController {
+@Service()
+@JsonController("/products")
+export class ProductController {
+  constructor(private readonly productService: ProductService) {}
+
+  @Get("/")
+  async getProducts() {
+    const products = await this.productService.getProducts();
+    return new Response(
+      true,
+      HTTP_STATUS_OK,
+      "Product Fetched Successfully",
+      products
+    );
+  }
+
   @Post("/")
-  getProduct(@Body() body: CreateProduct, req: Request, res: Response) {
-    AppResponse.success({
-      res,
-      status_code: 200,
-      message: "Hello how are you",
-      data:body
-    });
+  async createProduct(@Body() body: CreateProduct) {
+    // const product = await this.productService.createProduct(body);
+    // return new Response(
+    //   HTTP_STATUS_CREATED,
+    //   "Product Created Successful",
+    //   product
+    // );
   }
 }

@@ -1,11 +1,12 @@
 import { AbstractRepository } from "src/common/abstracts/repository.abstract";
-import { Product } from "../entity/product.entity";
 import { DataSource, Repository } from "typeorm";
+import { Category } from "../entity/category.entity";
 import { Service } from "typedi";
 
+
 @Service()
-export class ProductRepository extends AbstractRepository<Product> {
+export class CategoryRepository extends AbstractRepository<Category> {
   constructor(dataSource: DataSource) {
-    super(dataSource, Product);
+    super(dataSource, Category);
   }
 }

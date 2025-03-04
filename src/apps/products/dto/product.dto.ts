@@ -1,12 +1,34 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import {
+  IsJSON,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from "class-validator";
 
-export class CreateProduct{
-    @IsNotEmpty()
-    @IsString()
-    name: string;
+export class CreateProduct {
+  @IsNotEmpty()
+  @IsString()
+  name: string;
 
-    @IsNotEmpty()
-    @IsNumber()
-    price: number;
-    
+  @IsNotEmpty()
+  @IsString()
+  image: string;
+
+  @IsJSON()
+  @IsOptional()
+  prescriptions: Record<string, any>;
+
+  @IsString()
+  @IsOptional()
+  description: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  price: number;
+
+  @IsUUID()
+  @IsNotEmpty()
+  categoryId: string;
 }

@@ -1,15 +1,18 @@
-import express, { Application, Express, Router } from "express";
-import { Config, Configurations } from "./common/config";
-import log from "./common/utils/logger";
-import { AppMiddleware } from "./common/utils/middleware/app.middleware";
-import swaggerJSDoc, { Options } from "swagger-jsdoc";
+import express from "express";
+import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import {
-  exceptionFilter,
-} from "./common/utils/middleware/error.middleware";
+import { useContainer, useExpressServer } from "routing-controllers";
+
+import { Configurations } from "./common/config";
+import { AppMiddleware } from "./common/utils/middleware/app.middleware";
+import log from "./common/utils/logger";
 import { dataSource } from "./common/db/typeorm.config";
-import { router } from "./common/decorators/controller.decorator";
 import "./apps/products/product.controller";
+import { CustomErrorHandler } from "./common/exceptions/http.exception";
+import { ProductController } from "./apps/products/product.controller";
+import { ValidationErrorHandler } from "./common/interceptors/validator.interceptor";
+import { Container } from "typedi";
+import { DataSource } from "typeorm";
 
 export class App {
   public app: express.Application;
@@ -20,14 +23,13 @@ export class App {
     this.config = Configurations.getInstance();
     this.databaseConnection();
     this.initializeMiddleware(middleware);
-    this.initializeErrorHandler();
     this.initializeSwagger();
     this.initializeRoutes();
   }
 
   public listen() {
     const server = this.app.listen(this.config.PORT, () => {
-      log.info(`====== ENV: ${this.config.NODE_ENV}=========`);
+      log.info(`====== ENV: ${this.config.NODE_ENV} =========`);
       log.info(`🚀 App listening on the port ${this.config.PORT}`);
     });
 
@@ -50,43 +52,40 @@ export class App {
     middleware.init(this.app);
   }
 
-  private initializeErrorHandler() {
-    this.app.use(exceptionFilter);
-  }
-
   private initializeRoutes() {
-    this.app.use(router);
+    useExpressServer(this.app, {
+      routePrefix: "/api/v1",
+      controllers: [ProductController],
+      middlewares: [AppMiddleware, ValidationErrorHandler, CustomErrorHandler],
+      defaultErrorHandler: false,
+    });
   }
 
   private initializeSwagger() {
     const options = {
       swaggerDefinition: {
         info: {
-          title: "Medicine Store Api",
+          title: "Medicine Store API",
           version: "1.0.0",
-          description:
-            "Medicine store restfulapi that handles price, prescription of drugs and provisions",
+          description: "Handles drug pricing, prescription, and provisions",
         },
         host: "localhost:4000",
         basePath: "/api/v1",
       },
       apis: ["swagger.yaml"],
-    } as Options;
-
+    };
     const specs = swaggerJSDoc(options);
     this.app.use("/api/v1/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
     log.info("Swagger Docs available at http://localhost:4000/api/v1/api-docs");
-
-   }
+  }
 
   private databaseConnection() {
     dataSource
       .initialize()
       .then(() => {
         log.info("Database Connected Successfully");
+        Container.set(DataSource, dataSource);
       })
-      .catch((e) => {
-        log.error(`Error connecting database, ${e.message}`);
-      });
+      .catch((e) => log.error(`Error connecting database, ${e.message}`));
   }
 }

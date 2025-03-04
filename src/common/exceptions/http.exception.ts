@@ -1,11 +1,18 @@
-export class HttpException extends Error {
-    statusCode: number;
-    success: boolean;
-  
-    constructor(statusCode: number, message: string, success: boolean = false) {
-      super();
-      
-      this.message = message;
-      this.statusCode = statusCode;
-    }
+import { NextFunction, Request, Response } from "express";
+import {
+  ExpressErrorMiddlewareInterface,
+  Middleware,
+} from "routing-controllers";
+import { Service } from "typedi";
+
+@Service()
+@Middleware({ type: "after" })
+export class CustomErrorHandler implements ExpressErrorMiddlewareInterface {
+  error(error: any, req: Request, res: Response, next: NextFunction) {
+    res.status(error.httpCode || 500).json({
+      status: false,
+      statusCode: error.httpCode,
+      message: error.message || "Internal Server Error",
+    });
   }
+}
