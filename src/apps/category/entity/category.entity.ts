@@ -8,12 +8,12 @@ import {
   TreeChildren,
   TreeParent,
 } from "typeorm";
-import { Product } from "./product.entity";
+import { Product } from "../../products/entity/product.entity";
 
 @Entity()
 @Tree("closure-table")
 export class Category extends AbstractEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column()

@@ -6,11 +6,11 @@ import {
 } from "typeorm";
 import { AbstractEntity } from "../../../common/abstracts/entity.abstract";
 import { SizeEnum } from "../../../common/enum/size.enum";
-import { Category } from "./category.entity";
+import { Category } from "../../category/entity/category.entity";
 
 @Entity()
 export class Product extends AbstractEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column({ nullable: false })

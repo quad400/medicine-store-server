@@ -12,7 +12,8 @@ import { CustomErrorHandler } from "./common/exceptions/http.exception";
 import { ProductController } from "./apps/products/product.controller";
 import { ValidationErrorHandler } from "./common/interceptors/validator.interceptor";
 import { Container } from "typedi";
-import { DataSource } from "typeorm";
+import { DataSource, TreeRepository } from "typeorm";
+import { CategoryController } from "./apps/category/category.controller";
 
 export class App {
   public app: express.Application;
@@ -55,10 +56,11 @@ export class App {
   private initializeRoutes() {
     useExpressServer(this.app, {
       routePrefix: "/api/v1",
-      controllers: [ProductController],
+      controllers: [CategoryController, ProductController],
       middlewares: [AppMiddleware, ValidationErrorHandler, CustomErrorHandler],
       defaultErrorHandler: false,
     });
+    Container.set(TreeRepository, "TreeRepository");
   }
 
   private initializeSwagger() {

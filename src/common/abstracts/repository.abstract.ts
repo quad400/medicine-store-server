@@ -49,7 +49,7 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
     if (entity) {
       throw new HttpError(
         HTTP_STATUS_FORBIDDEN,
-        `${this.getEntityName()} with ${uniqueField} "${data[uniqueField]}" already exists.`
+        `${this.getEntityName().split(" ")[1]} with ${uniqueField} "${data[uniqueField]}" already exists.`
       );
     }
     return true;
@@ -75,10 +75,12 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
       ...options,
     });
 
-    if (!entity || !bypassExistenceCheck) {
+    console.log(entity)
+
+    if (!entity || bypassExistenceCheck) {
       throw new HttpError(
         HTTP_STATUS_NOT_FOUND,
-        `${this.getEntityName()} with "${JSON.stringify(
+        `${this.getEntityName().split(" ")[1]} with "${JSON.stringify(
           data
         )}" does not exist or has been deleted.`
       );
@@ -132,7 +134,7 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
     };
   }
 
-  async findAll({
+  async find({
     options,
     search,
   }: {
@@ -156,7 +158,9 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
   }
 
   async findOneAndDelete(data: T): Promise<void> {
-    const entity = await this.findOne({ data: data });
+    console.log("Hello",{...data})
+    const entity = await this.findOne({ data: {...data} });
+    console.log(entity)
     await this.repository.remove(entity);
   }
 
@@ -177,4 +181,5 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
     Object.assign(entity, data);
     return await this.repository.save(entity);
   }
+
 }

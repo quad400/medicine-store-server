@@ -1,10 +1,11 @@
 import Container, { Inject, Service } from "typedi";
 import { CreateProduct } from "./dto/product.dto";
 import { ProductRepository } from "./repository/product.repository";
-import { CategoryRepository } from "./repository/category.repository";
+import { CategoryRepository } from "../category/repository/category.repository";
+import { ProductInterface } from "./product.interface";
 
 @Service()
-export class ProductService {
+export class ProductService implements ProductInterface{
   constructor(
     private readonly productRepository: ProductRepository,
     private readonly categoryRepository: CategoryRepository
