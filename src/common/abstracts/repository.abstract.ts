@@ -23,12 +23,12 @@ import { Service } from "typedi";
 export abstract class AbstractRepository<T extends AbstractEntity> {
   protected repository: Repository<T>;
 
-  constructor(private dataSource: DataSource,private entity: EntityTarget<T>) {
+  constructor(private dataSource: DataSource, private entity: EntityTarget<T>) {
     this.repository = this.dataSource.getRepository(entity);
   }
 
-  getEntityName(){
-    return this.entity.toString()
+  getEntityName() {
+    return this.entity.toString();
   }
 
   async save(entity: T): Promise<T> {
@@ -49,7 +49,9 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
     if (entity) {
       throw new HttpError(
         HTTP_STATUS_FORBIDDEN,
-        `${this.getEntityName().split(" ")[1]} with ${uniqueField} "${data[uniqueField]}" already exists.`
+        `${this.getEntityName().split(" ")[1]} with ${uniqueField} "${
+          data[uniqueField]
+        }" already exists.`
       );
     }
     return true;
@@ -59,32 +61,34 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
   async create(data: Partial<T>): Promise<T> {
     return await this.repository.save(data as T);
   }
-
-
   async findOne({
     data,
-    bypassExistenceCheck = false,
+    throwErrorIfNotFound = true,
     options,
   }: {
-    data?: T;
-    bypassExistenceCheck?: boolean;
-    options?: any;
+    data: Partial<T>;
+    throwErrorIfNotFound?: boolean;
+    options?: FindOneOptions<T>;
   }): Promise<T> {
     const entity = await this.repository.findOne({
-      where: data as FindOneOptions<T> | FindManyOptions<T[]>,
+      where: data as FindOptionsWhere<T>,
       ...options,
     });
 
-    if (!entity || bypassExistenceCheck) {
+    if (!entity) {
       throw new HttpError(
         HTTP_STATUS_NOT_FOUND,
-        `${this.getEntityName().split(" ")[1]} with "${JSON.stringify(
+        `${this.getEntityType()} matching ${JSON.stringify(
           data
-        )}" does not exist or has been deleted.`
+        )} was not found.`
       );
     }
 
     return entity;
+  }
+
+  private getEntityType(): string {
+    return this.repository.metadata.targetName;
   }
 
   // Pagination method with isDeleted check and total count
@@ -155,15 +159,19 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
     return this.repository.createQueryBuilder(alias);
   }
 
-  async findOneAndDelete(data: T): Promise<void> {
-    console.log("Hello",{...data})
-    const entity = await this.findOne({ data: {...data} });
-    console.log(entity)
+  async findOneAndDelete(data: Partial<T>): Promise<void> {
+    console.log("Hello", { ...data });
+    const entity = await this.findOne({data});
+    console.log(entity);
     await this.repository.remove(entity);
   }
 
   // Update method with existence check
-  async findOneAndUpdate(id: string, data: Partial<T>, uniqueField?: string): Promise<T> {
+  async findOneAndUpdate(
+    id: string,
+    data: Partial<T>,
+    uniqueField?: string
+  ): Promise<T> {
     const entity = await this.repository.findOne({
       where: { id } as FindOneOptions["where"],
     });
@@ -179,5 +187,4 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
     Object.assign(entity, data);
     return await this.repository.save(entity);
   }
-
 }

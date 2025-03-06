@@ -1,9 +1,7 @@
-import { DataSource, DataSourceOptions, useContainer } from "typeorm";
+import { DataSource, DataSourceOptions } from "typeorm";
 import { Config } from "../config";
 import {} from "typeorm/container"
-import Container from "typedi";
 
-// useContainer(Container)
 const typeormConfig: DataSourceOptions = {
   type: "postgres",
   url: Config.NODE_ENV === "production" ? Config.DATABASE_URL : undefined,
@@ -12,7 +10,7 @@ const typeormConfig: DataSourceOptions = {
   username: Config.DATABASE_USERNAME,
   password: Config.DATABASE_PASSWORD,
   database: Config.DATABASE_NAME,
-  entities: [`src/apps/**/entity/*.entity.ts`],
+  entities: [`src/apps/**/*.entity.ts`],
   migrations: ["src/common/db/migrations/*.{ts, js}"],
   synchronize: false,
 };

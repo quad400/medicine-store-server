@@ -1,4 +1,4 @@
-import { AbstractEntity } from "../../../common/abstracts/entity.abstract";
+import { AbstractEntity } from "../../common/abstracts/entity.abstract";
 import {
   Column,
   Entity,
@@ -8,7 +8,7 @@ import {
   TreeChildren,
   TreeParent,
 } from "typeorm";
-import { Product } from "../../products/entity/product.entity";
+import { Product } from "../product/product.entity";
 
 @Entity()
 @Tree("closure-table")

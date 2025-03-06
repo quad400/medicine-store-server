@@ -2,11 +2,13 @@ import {
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { AbstractEntity } from "../../../common/abstracts/entity.abstract";
-import { SizeEnum } from "../../../common/enum/size.enum";
-import { Category } from "../../category/entity/category.entity";
+import { AbstractEntity } from "../../common/abstracts/entity.abstract";
+import { SizeEnum } from "../../common/enum/size.enum";
+import { Category } from "../category/category.entity";
+import { Cart } from "../cart/cart.entity";
 
 @Entity()
 export class Product extends AbstractEntity {
@@ -29,15 +31,25 @@ export class Product extends AbstractEntity {
   price: number;
 
   @Column({
-    type: "simple-enum",
+    type: "enum",
     enum: SizeEnum,
     default: SizeEnum.DEFAULT,
   })
-  size: SizeEnum;
+  size: SizeEnum
+
+  @Column({
+    type: "numeric",
+    nullable: false,
+    default: 0,
+  })
+  available_quatity: number;
 
   @ManyToOne(() => Category, (category) => category.products, {
-    eager:true,
+    eager: true,
     onDelete: "CASCADE",
   })
   category: Category;
+
+  @OneToMany(() => Cart, (cart) => cart.product)
+  carts: Cart[];
 }

@@ -2,17 +2,21 @@ import {
   Body,
   Controller,
   Get,
-  HttpError,
-  JsonController,
+  Param,
   Post,
-  QueryParam,
+  Put,
   QueryParams,
 } from "routing-controllers";
 import "reflect-metadata";
 import { Response } from "src/common/utils/response";
 import { ProductService } from "./product.service";
-import Container, { Inject, Service } from "typedi";
-import { CreateProductDto, ProductQueryDto } from "./dto/product.dto";
+import { Service } from "typedi";
+import {
+  CreateProductDto,
+  ProductCategoryQueryDto,
+  ProductQueryDto,
+  UpdateProductDto,
+} from "./dto/product.dto";
 import {
   HTTP_STATUS_CREATED,
   HTTP_STATUS_OK,
@@ -24,8 +28,11 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Get("/")
-  async getProducts() {
-    const products = await this.productService.getProducts();
+  async getProducts(@QueryParams() { limit, page }: ProductQueryDto) {
+    const products = await this.productService.getProducts(
+      Number(limit),
+      Number(page)
+    );
     return new Response(
       true,
       HTTP_STATUS_OK,
@@ -36,7 +43,7 @@ export class ProductController {
 
   @Get("/category")
   async getProductByCategory(
-    @QueryParams() { categoryId, limit, page }: ProductQueryDto
+    @QueryParams() { categoryId, limit, page }: ProductCategoryQueryDto
   ) {
     const products = await this.productService.getProductByCategory(
       categoryId,
@@ -59,6 +66,29 @@ export class ProductController {
       HTTP_STATUS_CREATED,
       "Product Created Successful",
       product
+    );
+  }
+
+  @Put("/:productId")
+  async updateProduct(
+    @Param("productId") productId: string,
+    @Body() body: UpdateProductDto
+  ) {
+    return new Response(
+      true,
+      HTTP_STATUS_OK,
+      "Product Updated Successful",
+      await this.productService.updateProduct(productId, body)
+    );
+  }
+
+  @Get("/:productId")
+  async getProduct(@Param("productId") productId: string) {
+    return new Response(
+      true,
+      HTTP_STATUS_OK,
+      "Product Updated Successful",
+      await this.productService.getProduct(productId)
     );
   }
 }

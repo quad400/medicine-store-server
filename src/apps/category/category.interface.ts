@@ -1,5 +1,5 @@
 import { CreateCategoryDto } from "./category.dto";
-import { Category } from "./entity/category.entity";
+import { Category } from "./category.entity";
 
 export interface CategoryInterface {
   createCategory(body: CreateCategoryDto): Promise<string>;

@@ -1,8 +1,8 @@
 import { Service } from "typedi";
 import { CreateCategoryDto } from "./category.dto";
-import { CategoryInterface } from "./catrgory.interface";
-import { CategoryRepository } from "./repository/category.repository";
-import { Category } from "./entity/category.entity";
+import { CategoryInterface } from "./category.interface";
+import { CategoryRepository } from "./category.repository";
+import { Category } from "./category.entity";
 
 @Service()
 export class CategoryService implements CategoryInterface {
