@@ -15,6 +15,7 @@ import { Container } from "typedi";
 import { DataSource, TreeRepository } from "typeorm";
 import { CategoryController } from "./apps/category/category.controller";
 
+
 export class App {
   public app: express.Application;
   public config: Configurations;
@@ -23,6 +24,7 @@ export class App {
     this.app = express();
     this.config = Configurations.getInstance();
     this.databaseConnection();
+    this.initializeModels()
     this.initializeMiddleware(middleware);
     this.initializeSwagger();
     this.initializeRoutes();
@@ -60,9 +62,11 @@ export class App {
       middlewares: [AppMiddleware, ValidationErrorHandler, CustomErrorHandler],
       defaultErrorHandler: false,
     });
-    Container.set(TreeRepository, "TreeRepository");
   }
 
+  private initializeModels(){
+  }
+  
   private initializeSwagger() {
     const options = {
       swaggerDefinition: {
@@ -80,8 +84,10 @@ export class App {
     this.app.use("/api/v1/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
     log.info("Swagger Docs available at http://localhost:4000/api/v1/api-docs");
   }
-
+  
   private databaseConnection() {
+
+    useContainer(Container)
     dataSource
       .initialize()
       .then(() => {

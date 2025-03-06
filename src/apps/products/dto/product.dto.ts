@@ -7,7 +7,7 @@ import {
   IsUUID,
 } from "class-validator";
 
-export class CreateProduct {
+export class CreateProductDto {
   @IsNotEmpty()
   @IsString()
   name: string;
@@ -31,4 +31,11 @@ export class CreateProduct {
   @IsUUID()
   @IsNotEmpty()
   categoryId: string;
+}
+
+export class ProductQueryDto {
+  @IsNotEmpty()
+  categoryId: string;
+  page: number = 1;
+  limit: number = 10;
 }

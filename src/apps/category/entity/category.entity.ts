@@ -19,7 +19,7 @@ export class Category extends AbstractEntity {
   @Column()
   name?: string;
 
-  @TreeChildren()
+  @TreeChildren({ cascade: true })
   children?: Category[];
 
   @TreeParent()

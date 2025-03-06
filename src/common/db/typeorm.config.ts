@@ -1,6 +1,9 @@
-import { DataSource, DataSourceOptions } from "typeorm";
+import { DataSource, DataSourceOptions, useContainer } from "typeorm";
 import { Config } from "../config";
+import {} from "typeorm/container"
+import Container from "typedi";
 
+// useContainer(Container)
 const typeormConfig: DataSourceOptions = {
   type: "postgres",
   url: Config.NODE_ENV === "production" ? Config.DATABASE_URL : undefined,

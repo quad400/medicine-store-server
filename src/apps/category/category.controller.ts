@@ -32,22 +32,23 @@ export class CategoryController {
   }
 
   @Get()
-  async get(@QueryParam("parentId") parentId?: string) {
+  async get() {
+    const categories = await this.categoryService.getCategories()
     return new Response(
       true,
       HTTP_STATUS_OK,
       "Categories Fetched Successfully",
-      await this.categoryService.getCategories()
+      categories
     );
   }
 
-  @Get("/decendants/:categoryId")
+  @Get("/descendants/:parentId")
   async getDescendants(@Param("parentId") parentId: string) {
     return new Response(
       true,
       HTTP_STATUS_OK,
       "Categories Fetched Successfully",
-      await this.categoryService.getCategoryDescendants(parentId)
+      await this.categoryService.getCategoryByParentId(parentId)
     );
   }
 

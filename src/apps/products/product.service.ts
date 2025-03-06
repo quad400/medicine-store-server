@@ -1,17 +1,17 @@
 import Container, { Inject, Service } from "typedi";
-import { CreateProduct } from "./dto/product.dto";
+import { CreateProductDto } from "./dto/product.dto";
 import { ProductRepository } from "./repository/product.repository";
 import { CategoryRepository } from "../category/repository/category.repository";
 import { ProductInterface } from "./product.interface";
 
 @Service()
-export class ProductService implements ProductInterface{
+export class ProductService implements ProductInterface {
   constructor(
     private readonly productRepository: ProductRepository,
     private readonly categoryRepository: CategoryRepository
   ) {}
 
-  async createProduct(body: CreateProduct) {
+  async createProduct(body: CreateProductDto) {
     const category = await this.categoryRepository.findOne({
       data: {
         id: body.categoryId,
@@ -27,9 +27,26 @@ export class ProductService implements ProductInterface{
   }
 
   async getProducts() {
-    const products = await this.productRepository.findAll({
+    const products = await this.productRepository.find({
       options: {},
     });
     return products;
+  }
+
+  async getProductByCategory(categoryId: string, page: number, limit: number) {
+    const [products, total] = await this.productRepository
+      .createQueryBuilder("product")
+      .where("product.categoryId = :categoryId", { categoryId })
+      .leftJoinAndSelect("product.category", "category")
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      data: products,
+    };
   }
 }

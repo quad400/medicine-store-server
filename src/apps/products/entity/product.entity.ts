@@ -36,6 +36,7 @@ export class Product extends AbstractEntity {
   size: SizeEnum;
 
   @ManyToOne(() => Category, (category) => category.products, {
+    eager:true,
     onDelete: "CASCADE",
   })
   category: Category;

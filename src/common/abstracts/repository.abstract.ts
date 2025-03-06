@@ -75,8 +75,6 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
       ...options,
     });
 
-    console.log(entity)
-
     if (!entity || bypassExistenceCheck) {
       throw new HttpError(
         HTTP_STATUS_NOT_FOUND,
