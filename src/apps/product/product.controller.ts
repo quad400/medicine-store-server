@@ -14,7 +14,7 @@ import { Service } from "typedi";
 import {
   CreateProductDto,
   ProductCategoryQueryDto,
-  ProductQueryDto,
+  QueryDto,
   UpdateProductDto,
 } from "./dto/product.dto";
 import {
@@ -28,7 +28,7 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Get("/")
-  async getProducts(@QueryParams() { limit, page }: ProductQueryDto) {
+  async getProducts(@QueryParams() { limit, page }: QueryDto) {
     const products = await this.productService.getProducts(
       Number(limit),
       Number(page)

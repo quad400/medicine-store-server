@@ -9,13 +9,14 @@ import {
   FindOptionsWhere,
   DataSource,
   EntityTarget,
+  UpdateResult,
 } from "typeorm";
 import { AbstractEntity } from "./entity.abstract";
 import {
   HTTP_STATUS_FORBIDDEN,
   HTTP_STATUS_NOT_FOUND,
 } from "../utils/constants";
-import { HttpError } from "routing-controllers";
+import { HttpError, NotFoundError } from "routing-controllers";
 import { Service } from "typedi";
 //   import { SearchKey } from '../enums/search.enum';
 
@@ -63,11 +64,9 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
   }
   async findOne({
     data,
-    throwErrorIfNotFound = true,
     options,
   }: {
     data: Partial<T>;
-    throwErrorIfNotFound?: boolean;
     options?: FindOneOptions<T>;
   }): Promise<T> {
     const entity = await this.repository.findOne({
@@ -76,13 +75,26 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
     });
 
     if (!entity) {
-      throw new HttpError(
-        HTTP_STATUS_NOT_FOUND,
+      throw new NotFoundError(
         `${this.getEntityType()} matching ${JSON.stringify(
           data
         )} was not found.`
       );
     }
+    return entity;
+  }
+
+  async findOneWithoutCheck({
+    data,
+    options,
+  }: {
+    data: Partial<T>;
+    options?: FindOneOptions<T>;
+  }): Promise<T | null> {
+    const entity = await this.repository.findOne({
+      where: data as FindOptionsWhere<T>,
+      ...options,
+    });
 
     return entity;
   }
@@ -160,9 +172,7 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
   }
 
   async findOneAndDelete(data: Partial<T>): Promise<void> {
-    console.log("Hello", { ...data });
-    const entity = await this.findOne({data});
-    console.log(entity);
+    const entity = await this.findOne({ data });
     await this.repository.remove(entity);
   }
 
@@ -186,5 +196,21 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
 
     Object.assign(entity, data);
     return await this.repository.save(entity);
+  }
+
+  async increment(
+    conditions: FindOptionsWhere<T>,
+    propertyPath: string,
+    value: number | string
+  ): Promise<UpdateResult> {
+    return await this.repository.increment(conditions, propertyPath, value);
+  }
+
+  async decrement(
+    conditions: FindOptionsWhere<T>,
+    propertyPath: string,
+    value: number | string
+  ): Promise<UpdateResult> {
+    return await this.repository.decrement(conditions, propertyPath, value);
   }
 }

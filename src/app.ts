@@ -14,7 +14,7 @@ import { ValidationErrorHandler } from "./common/interceptors/validator.intercep
 import { Container } from "typedi";
 import { DataSource, TreeRepository } from "typeorm";
 import { CategoryController } from "./apps/category/category.controller";
-
+import { CartController } from "./apps/cart/cart.controller";
 
 export class App {
   public app: express.Application;
@@ -24,7 +24,7 @@ export class App {
     this.app = express();
     this.config = Configurations.getInstance();
     this.databaseConnection();
-    this.initializeModels()
+    this.initializeModels();
     this.initializeMiddleware(middleware);
     this.initializeSwagger();
     this.initializeRoutes();
@@ -58,15 +58,14 @@ export class App {
   private initializeRoutes() {
     useExpressServer(this.app, {
       routePrefix: "/api/v1",
-      controllers: [CategoryController, ProductController],
+      controllers: [CategoryController, ProductController, CartController],
       middlewares: [AppMiddleware, ValidationErrorHandler, CustomErrorHandler],
       defaultErrorHandler: false,
     });
   }
 
-  private initializeModels(){
-  }
-  
+  private initializeModels() {}
+
   private initializeSwagger() {
     const options = {
       swaggerDefinition: {
@@ -84,10 +83,9 @@ export class App {
     this.app.use("/api/v1/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
     log.info("Swagger Docs available at http://localhost:4000/api/v1/api-docs");
   }
-  
-  private databaseConnection() {
 
-    useContainer(Container)
+  private databaseConnection() {
+    useContainer(Container);
     dataSource
       .initialize()
       .then(() => {

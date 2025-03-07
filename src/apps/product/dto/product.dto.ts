@@ -43,6 +43,7 @@ export class CreateProductDto {
   categoryId: string;
 }
 
+
 export class UpdateProductDto {
   @IsOptional()
   @IsString()
@@ -64,6 +65,10 @@ export class UpdateProductDto {
   @IsNumber()
   price: number;
 
+  @IsNotEmpty()
+  @IsEnum(SizeEnum, { message: "size must be one of: default, small, large, medium, xlarge" })
+  size: SizeEnum;
+
   @IsNumber()
   @IsOptional()
   available_quantity: number;
@@ -73,7 +78,7 @@ export class UpdateProductDto {
   categoryId: string;
 }
 
-export class ProductQueryDto {
+export class QueryDto {
   page: number = 1;
   limit: number = 10;
 }
